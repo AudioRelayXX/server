@@ -1,24 +1,18 @@
-import 'package:bootstrap/bootstrap.dart' as bootstrap;
-import 'package:flutter/foundation.dart';
+import 'package:audio_relay_x_server/ui/pages/home.dart';
+import 'package:bootstrap/bootstrap.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() {
-  bootstrap.bootstrap(
-    app: const AudioRelayXServer(),
-    initializeServices: () async {},
-  );
-}
-
-class AudioRelayXServer extends ConsumerWidget {
-  const AudioRelayXServer({super.key});
-
+class AudioRelayClientApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp.router(
-      title: 'AudioRelayX Server',
-      debugShowCheckedModeBanner: kDebugMode,
-      theme: bootstrap.AppTheme.light,
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'AudioRelayX',
+      theme: AppTheme.light,
+      home: const ServerMainPage(),
     );
   }
+}
+
+void main() {
+  bootstrap(app: AudioRelayClientApp(), initializeServices: () async {});
 }
