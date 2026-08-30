@@ -116,7 +116,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "0bb4598792d85fd6f69e51b6630d488ba3e60e72"
+      resolved-ref: "194063acf1320081656721909db6f3ba6f8df14e"
       url: "https://github.com/AudioRelayXX/flutter_pcm_sound_windows.git"
     source: git
     version: "3.3.3"
