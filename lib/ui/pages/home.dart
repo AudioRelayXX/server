@@ -81,7 +81,10 @@ class _ServerMainPageState extends State<ServerMainPage> {
     }
   }
 
-  Future<void> stopServer() async {}
+  Future<void> stopServer() async {
+    await Server.stopServer();
+    UniversalPlayer.dispose();
+  }
 
   Future<void> _toggle() async {
     if (_isBusy) return;

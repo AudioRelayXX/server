@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:bootstrap/bootstrap.dart';
 import 'package:flywheel/flywheel.dart';
 import 'package:forge/forge.dart';
 import 'package:trebuchet/trebuchet.dart';
@@ -20,7 +21,6 @@ class Jitter {
     Uint8List payload,
   ) {
     init();
-
     _buffer!.addPacket(
       sequence: sequence,
       payload: payload,
@@ -91,6 +91,8 @@ class Server {
     if (!_receiver!.isStarted) await _receiver!.start();
 
     _subscription ??= _receiver!.packets.listen((packet) {
+      logger.d(
+          'Received packet with sequence ${packet.sequence} and payload size ${packet.payload.length}');
       Jitter.addPacket(packet.sequence, packet.payload);
     });
   }
