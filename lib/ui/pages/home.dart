@@ -38,28 +38,56 @@ class _ServerMainPageState extends State<ServerMainPage> {
     setState(() => _resolvingIp = true);
 
     String? ip;
+
     try {
       final interfaces = await NetworkInterface.list(
         type: InternetAddressType.IPv4,
         includeLoopback: false,
         includeLinkLocal: false,
       );
+
+      // Prefer Wi-Fi interface.
       for (final interface in interfaces) {
-        for (final addr in interface.addresses) {
-          if (addr.isLoopback) continue;
-          ip = addr.address;
-          break;
+        debugPrint(
+          'Interface: ${interface.name} -> '
+          '${interface.addresses.map((a) => a.address).join(', ')}',
+        );
+
+        if (interface.name.toLowerCase().contains('wlan')) {
+          for (final address in interface.addresses) {
+            if (!address.isLoopback) {
+              ip = address.address;
+              break;
+            }
+          }
         }
+
         if (ip != null) break;
       }
-    } catch (_) {
-      ip = null;
+
+      // Fallback to any usable IPv4 interface.
+      if (ip == null) {
+        for (final interface in interfaces) {
+          for (final address in interface.addresses) {
+            if (!address.isLoopback) {
+              ip = address.address;
+              break;
+            }
+          }
+
+          if (ip != null) break;
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to resolve local IP: $e');
     }
 
-    if (!mounted) return;
     setState(() {
-      _localIp = ip;
       _resolvingIp = false;
+
+      if (ip != null) {
+        _localIp = ip;
+      }
     });
   }
 
