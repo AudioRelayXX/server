@@ -11,15 +11,15 @@ class Jitter {
 
   static void init() {
     _buffer ??= FlywheelBuffer(
-      targetLatencyMs: 30,
-      maxPacketAgeMs: 30,
+      targetLatencyMs: 200,
+      maxPacketAgeMs: 200,
     );
   }
 
   static void addPacket(
-      int sequence,
-      Uint8List payload,
-      ) {
+    int sequence,
+    Uint8List payload,
+  ) {
     init();
     _buffer!.addPacket(
       sequence: sequence,
@@ -59,7 +59,7 @@ class Decoder {
     );
   }
 
-  static Uint8List decode(Uint8List opusPacket) {
+  static Uint8List decode(Uint8List? opusPacket) {
     final decoder = _decoder;
     if (decoder == null) {
       throw StateError('Decoder has not been initialized');
@@ -105,7 +105,7 @@ class Server {
     _subscription ??= _receiver!.packets.listen((packet) {
       logger.d(
         'Received packet with sequence ${packet.sequence} '
-            'and payload size ${packet.payload.length}',
+        'and payload size ${packet.payload.length}',
       );
 
       Jitter.addPacket(
@@ -120,17 +120,12 @@ class Server {
 
     logger.i(
       'Audio server listening on UDP port $port '
-          '($sampleRate Hz, $channels channel(s))',
+      '($sampleRate Hz, $channels channel(s))',
     );
   }
 
   static Uint8List getPlaybackFrame() {
     final opusPacket = Jitter.pullNextFrame();
-
-    if (opusPacket == null) {
-      return Uint8List(0);
-    }
-
     return Decoder.decode(opusPacket);
   }
 
