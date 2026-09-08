@@ -48,15 +48,10 @@ class Jitter {
 
 class Decoder {
   static ForgeDecoder? _decoder;
+  static bool _hasDecodedOnce = false;
 
-  static void init({
-    required int sampleRate,
-    required int channels,
-  }) {
-    _decoder ??= ForgeDecoder(
-      sampleRate: sampleRate,
-      channels: channels,
-    );
+  static void init({required int sampleRate, required int channels}) {
+    _decoder ??= ForgeDecoder(sampleRate: sampleRate, channels: channels);
   }
 
   static Uint8List decode(Uint8List? opusPacket) {
@@ -65,12 +60,19 @@ class Decoder {
       throw StateError('Decoder has not been initialized');
     }
 
-    return decoder.decode(opusPacket);
+    if (opusPacket == null && !_hasDecodedOnce) {
+      return Uint8List(0);
+    }
+
+    final result = decoder.decode(opusPacket);
+    if (opusPacket != null) _hasDecodedOnce = true;
+    return result;
   }
 
   static void dispose() {
     _decoder?.dispose();
     _decoder = null;
+    _hasDecodedOnce = false;
   }
 }
 
